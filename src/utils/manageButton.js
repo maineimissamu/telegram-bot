@@ -1,4 +1,7 @@
-// Función que manejara el botón
+const handleDudas = require("./dudas");
+const handleTarifas = require("./tarifas");
+
+// Función que manejará el botón principal
 async function manageButton(ctx) {
     await ctx.reply(
         `✅ Dentro del canal tienes:
@@ -14,8 +17,22 @@ async function manageButton(ctx) {
 
 🔖 Accede a un grupo de calidad con trabajo profesional y dedicación completa.
 
-Escríbeme para aclarar tus dudas. @IC_Bolsa`
+Escríbeme para aclarar tus dudas. @IC_Bolsa`,
+        {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: 'Tarifas', callback_data: 'tarifas_click' }],
+                    [{ text: 'Dudas', callback_data: 'dudas_click' }]
+                ]
+            }
+        }
     );
 }
 
-module.exports = manageButton;
+// Función para registrar las acciones de los botones
+function registerButtonActions(bot) {
+    bot.action('tarifas_click', handleTarifas);
+    bot.action('dudas_click', handleDudas);
+}
+
+module.exports = { manageButton, registerButtonActions };
