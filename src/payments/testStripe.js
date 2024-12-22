@@ -6,10 +6,10 @@ const { createPaymentSession } = require('./stripe'); // Importar la funcion cre
 
     try {
         //Prueba con la Promocion de Bienvenida (pago único)
-        const promoUrl = await createPaymentSession('price_1QXtifIIU3N2X4VQ7el4i9Xu', 'payment', successUrl, cancelUrl);
+        const promoUrl = await createPaymentSession('price_1QYb1m4gaL6VjssxwqiFDLUS', 'payment', successUrl, cancelUrl);
         console.log('Sesión de pago creada para la Promocion de Bienvenida', promoUrl);
 
-        const monthlyUrl = await createPaymentSession('price_1QUGE6IIU3N2X4VQ0fq6jRjh', 'subscription', successUrl, cancelUrl);
+        const monthlyUrl = await createPaymentSession('price_1QYb0P4gaL6VjssxIuejBG77', 'subscription', successUrl, cancelUrl);
         console.log('Sesion de pago creada para Pago Mensual:', monthlyUrl);
     } catch (error) {
         console.error('Error creando la sesion de pago:', error)

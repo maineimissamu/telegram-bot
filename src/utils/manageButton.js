@@ -1,10 +1,12 @@
 const handleDudas = require("./dudas");
 const handleTarifas = require("./tarifas");
 
-// Función que manejará el botón principal
-async function manageButton(ctx) {
-    await ctx.reply(
-        `✅ Dentro del canal tienes:
+// Configurar todas las acciones relacionadas con "Más información" y sus botones adicionales
+function setupManageButton(bot) {
+    // Acción del botón "Más información"
+    bot.action('info_click', async (ctx) => {
+        await ctx.reply(
+            `✅ Dentro del canal tienes:
 
 - ‼️Cómo empezar a operar para gente no iniciada + Elección de brokers.
 - 🗣️Explicación sencilla del funcionamiento de las estrategias. Para todos los niveles.
@@ -18,21 +20,20 @@ async function manageButton(ctx) {
 🔖 Accede a un grupo de calidad con trabajo profesional y dedicación completa.
 
 Escríbeme para aclarar tus dudas. @IC_Bolsa`,
-        {
-            reply_markup: {
-                inline_keyboard: [
-                    [{ text: 'Tarifas', callback_data: 'tarifas_click' }],
-                    [{ text: 'Dudas', callback_data: 'dudas_click' }]
-                ]
+            {
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: 'Tarifas', callback_data: 'tarifas_click' }],
+                        [{ text: 'Dudas', callback_data: 'dudas_click' }]
+                    ]
+                }
             }
-        }
-    );
-}
+        );
+    });
 
-// Función para registrar las acciones de los botones
-function registerButtonActions(bot) {
-    bot.action('tarifas_click', handleTarifas);
+    // Registrar acciones adicionales
+    bot.action('tarifas_click', (ctx) => handleTarifas(ctx, bot));
     bot.action('dudas_click', handleDudas);
 }
 
-module.exports = { manageButton, registerButtonActions };
+module.exports = { setupManageButton };

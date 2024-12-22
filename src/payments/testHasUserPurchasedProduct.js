@@ -2,8 +2,8 @@ const {hasPurchasedProduct} = require('./hasUserPurchasedProduct');
 
 (async () => {
     try {
-        const email = 'honnorataff@gmail.com';
-        const productId = "prod_RN0EUWdGKcnmRg";
+        const email = 'kiokomac@gmail.com';
+        const productId = "prod_RRTzN062zQyJkN";
 
         const result = await hasPurchasedProduct(email, productId);
 
