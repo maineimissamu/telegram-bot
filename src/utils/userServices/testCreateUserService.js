@@ -1,4 +1,3 @@
-require('dotenv').config();
 const createUser = require('./createUserService');
 const connectDB = require('../../database/database');
 
