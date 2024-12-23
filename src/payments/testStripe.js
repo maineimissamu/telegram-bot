@@ -11,6 +11,9 @@ const { createPaymentSession } = require('./stripe'); // Importar la funcion cre
 
         const monthlyUrl = await createPaymentSession('price_1QYb0P4gaL6VjssxIuejBG77', 'subscription', successUrl, cancelUrl);
         console.log('Sesion de pago creada para Pago Mensual:', monthlyUrl);
+
+        const anualUrl = await createPaymentSession('price_1QYrLzIIU3N2X4VQHcjGxny8', 'payment', successUrl, cancelUrl)
+        console.log('Sesion de pago creada para Pago Anual:', anualUrl);
     } catch (error) {
         console.error('Error creando la sesion de pago:', error)
     }

@@ -1,14 +1,17 @@
-const {hasPurchasedProduct} = require('./hasUserPurchasedProduct');
+const connectDB = require('../database/database');
+const hasUserPurchasedProduct = require('./hasUserPurchasedProduct');
 
 (async () => {
     try {
-        const email = 'kiokomac@gmail.com';
-        const productId = "prod_RRTzN062zQyJkN";
+        await connectDB();
 
-        const result = await hasPurchasedProduct(email, productId);
+        const email = 'sam.chadwick.p@gmail.com'; // Cambiar por un correo válido
+        const hasPurchased = await hasUserPurchasedProduct(email);
 
-        console.log(`¿El correo ${email} compro el producto ${productId}?`, result ? 'Si' : 'No');
+        console.log(`¿El usuario con correo ${email} ha comprado alguna suscripción? ${hasPurchased ? 'Sí' : 'No'}`);
     } catch (error) {
-        console.error('Error durante la prueba:', error);
-    }   
+        console.error('Error durante la prueba:', error.message);
+    } finally {
+        process.exit();
+    }
 })();
