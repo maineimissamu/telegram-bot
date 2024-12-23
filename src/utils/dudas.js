@@ -19,7 +19,8 @@ Las operaciones están explicadas de forma clara y sencilla para que sean entend
 *¿Tengo algún tipo de compromiso?*  
 Ninguno\\.  
 Puedes darte de baja del servicio en cualquier momento con solo enviar un mensaje al administrador\\.`,
-            parse_mode: 'MarkdownV2'
+            parse_mode: 'MarkdownV2',
+            
         }
     );
 }

@@ -1,6 +1,10 @@
 const { Telegraf } = require('telegraf');
 const { rutaImagen, captionTexto } = require('./sendInformation');
-const { manageButton, registerButtonActions } = require('../utils/manageButton');
+const { setupManageButton } = require('../utils/manageButton');
+
+
+
+
 
 
 // Reemplaza 'TU_TOKEN_AQUI' con el token de tu bot
@@ -21,11 +25,8 @@ bot.start(async (ctx) => {
     );
 });
 
-// Acción del botón "Más información"
-bot.action('info_click', manageButton);
+setupManageButton(bot);
 
-// Registrar las acciones de los botones adicionales
-registerButtonActions(bot);
 
 // Inicia el bot
 bot.launch();
