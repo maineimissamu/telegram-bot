@@ -2,8 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { handleCompletedSession } = require('./handleCompletedSessions'); 
+const connectDB = require('../database/database');
+const  handleCompletedSession  = require('./handleCompletedSessions'); 
+const handlePaymentIntentSucceeded = require('./handlePaymentIntentSucceeded');
+const handleInvoicePaymentSucceeded = require('./handleInvoicePaymentSucceeded')
 
+connectDB();
 const app = express();
 
 // Clave secreta del webhook (La obtendrás al configurar el webhook en Stripe)
@@ -31,7 +35,17 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (req, res
         } catch (error) {
             console.error('Error procesando checkout.session.completed:', error);
         }
-    } else {
+    } else if (event.type === 'payment_intent.succeeded') {
+        try {
+            await handlePaymentIntentSucceeded(event.data.object);
+        } catch (error) {
+            console.error('Error procesando paymentIntent')
+        }
+        
+    }  else if(event.type === "invoice.payment_succeeded") {
+        await handleInvoicePaymentSucceeded(event.data.object);
+    }
+    else {
         console.log(`Evento no manejado_ ${event}`);
     }
 })

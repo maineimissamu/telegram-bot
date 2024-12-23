@@ -1,32 +1,60 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const User = require('../database/models/user');
+const productConfig = require('./productConfig'); // Configuración de productos
 
 /**
- * Maneja el evento `checkout.session.completed`
- * @param {object} session - Objeto de la sesion de pago completada
+ * Maneja una sesión de pago completada
+ * @param {Object} session - Objeto de la sesión de Stripe
  */
-
-async function handleCompletedSession(session) {
+const handleCompletedSession = async (session) => {
     try {
-        // Expandir los line_items para obtener detalles del producto
-        const sessionWithItems = await stripe.checkout.sessions.retrieve(session.id, {
-            expand: ['line_items.data.price.product'],
+        const email = session.customer_details.email;
+
+        // Buscar o crear un usuario
+        let user = await User.findOne({ email });
+        if (!user) {
+            console.log(`Usuario con correo ${email} no encontrado, creando uno nuevo.`);
+            user = new User({ email, chatId: null }); // chatId será null hasta que lo asignes
+        }
+
+        // Guardar el paymentIntent
+        user.paymentIntent = session.payment_intent; // Asociar el paymentIntent al usuario
+
+        // Obtener los productos comprados
+        const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
+            expand: ['data.price.product'],
         });
 
-        const lineItems = sessionWithItems.line_items.data;
+        for (const item of lineItems.data) {
+            const productId = item.price.product.id;
 
-        // Procesar cada producto comprado
-        lineItems.forEach(item =>  {
-            const productId = item.price.product; // ID del producto
-            const productName = item.price.product.name; // Nombre del producto
-            const quantity = item.quantity; // Cantidad comprada
+            if (productConfig[productId]) {
+                const { type } = productConfig[productId];
 
-            console.log(`Producto comprado: ${productName} (ID: ${productId}), Cantidad: ${quantity}`);
-        });
-        console.log('Evento procesado correctamente');
+                if (type) {
+                    // Actualizar solo el campo `type` en `subscriptionPlan`
+                    user.subscriptionPlan = {
+                        ...user.subscriptionPlan,
+                        type, // Sobrescribir el campo `type`
+                    };
+                    console.log(`Suscripción '${type}' asignada a ${email}`);
+                } else {
+                    console.warn(`El producto con ID ${productId} no tiene un tipo definido.`);
+                }
+            } else {
+                console.warn(`Producto con ID ${productId} no tiene reglas especiales configuradas.`);
+            }
+        }
+
+        // Marcar `checkout.session.completed` como procesado
+        user.isSessionCompleted = true;
+
+        // Guardar cambios en la base de datos
+        await user.save();
+        console.log(`Datos preliminares guardados para ${email}`);
     } catch (error) {
-        console.error('Error procesando checkout.session.completed', error);
-        throw error;
+        console.error('Error manejando la sesión completada:', error.message);
     }
-}
+};
 
-module.exports = {handleCompletedSession};
+module.exports = handleCompletedSession;

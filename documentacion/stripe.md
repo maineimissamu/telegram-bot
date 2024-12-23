@@ -1,14 +1,122 @@
-# Documentación: Stripe Integration
+# Documentación: Proyecto Telegram Bot
 
-Este documento detalla la implementación de las funcionalidades relacionadas con Stripe en el proyecto.
+Este documento explica las funcionalidades principales, cómo están conectadas y cómo trabajan juntas.
 
 ---
 
-## **1. Archivo: `stripe.js`**
-### **Descripción**
-Este archivo se encarga de manejar la creación de sesiones de pago en Stripe. Soporta dos tipos de sesiones:
-- **Pagos únicos:** Para productos como "Promoción de Bienvenida" o "Pago Anual".
-- **Suscripciones recurrentes:** Como "Suscripción Mensual".
+## **1. Conexión a MongoDB**
+
+### **Archivo: `database.js`**
+Este archivo establece y mantiene la conexión con MongoDB usando Mongoose.
+
+**Resumen:**
+- La conexión se abre al inicio del proyecto y se mantiene activa.
+- Cualquier operación que use Mongoose reutiliza esta conexión.
+
+**Código clave:**
+```javascript
+const mongoose = require('mongoose');
+require('dotenv').config();
+
+const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log('Conexión a MongoDB exitosa');
+    } catch (error) {
+        console.error('Error al conectar con MongoDB:', error.message);
+        process.exit(1); // Salir si la conexión falla
+    }
+};
+
+connectDB(); // Abre la conexión al cargar este archivo
+
+module.exports = connectDB;
+```
+
+---
+
+## **2. Manejo de Usuarios**
+
+### **Modelo: `user.js`**
+Define el esquema de datos para los usuarios en MongoDB.
+
+**Campos principales:**
+- `chatId` (String, único): ID del chat del usuario en Telegram.
+- `email` (String, único): Correo electrónico del usuario.
+- `subscriptionPlan` (String, opcional): Plan de suscripción activo.
+- `subscriptionExpireDate` (Date, opcional): Fecha de expiración de la suscripción.
+
+**Código clave:**
+```javascript
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+    chatId: {type: String, required: true, unique: true},
+    email: {type: String, required: true, unique: true},
+    subscriptionPlan: {type: String, default: null},
+    subscriptionExpireDate: {type: Date, default: null},
+}, {timestamps: true});
+
+module.exports = mongoose.model('User', userSchema);
+```
+
+---
+
+### **Servicios**
+Los servicios se encargan de realizar operaciones CRUD sobre los usuarios. Aquí tienes los servicios existentes:
+
+#### **`createUserService.js`**
+**Descripción:** Crea un usuario nuevo en la base de datos.
+
+**Código clave:**
+```javascript
+const User = require('../../database/models/user');
+
+const createUser = async (chatId, email) => {
+    try {
+        const newUser = await User.create({chatId, email});
+        console.log('Usuario creado:', newUser);
+        return newUser;
+    } catch (error) {
+        console.error('Error al crear el usuario:', error.message);
+        throw new Error('No se pudo crear el usuario');
+    }
+};
+
+module.exports = createUser;
+```
+
+#### **`findUserService.js`**
+**Descripción:** Busca un usuario en la base de datos.
+
+**Código clave:**
+```javascript
+const User = require('../../database/models/user');
+
+const findUser = async (filter) => {
+    try {
+        const user = await User.findOne(filter);
+        if (!user) {
+            console.log('Usuario no encontrado');
+            return null;
+        }
+        console.log('Usuario encontrado:', user);
+        return user;
+    } catch (error) {
+        console.error('Error al buscar el usuario:', error.message);
+        throw new Error('No se pudo buscar el usuario');
+    }
+};
+
+module.exports = findUser;
+```
+
+---
+
+## **3. Integración con Stripe**
+
+### **Archivo: `stripe.js`**
+**Descripción:** Este archivo se encarga de manejar la creación de sesiones de pago en Stripe.
 
 ### **Funciones**
 #### `createPaymentSession(priceId, mode, successUrl, cancelUrl)`
@@ -22,10 +130,8 @@ Este archivo se encarga de manejar la creación de sesiones de pago en Stripe. S
 
 ---
 
-## **2. Archivo: `webhook.js`**
-### **Descripción**
-Este archivo escucha los eventos generados por Stripe y redirige la lógica según el tipo de evento. Actualmente maneja:
-- **`checkout.session.completed`:** Procesa los pagos exitosos.
+### **Archivo: `webhook.js`**
+**Descripción:** Este archivo escucha los eventos generados por Stripe y redirige la lógica según el tipo de evento.
 
 ### **Configuración**
 1. **Puerto:** El servidor está configurado para escuchar en el puerto `4000`.
@@ -33,11 +139,10 @@ Este archivo escucha los eventos generados por Stripe y redirige la lógica seg�
 
 ---
 
-## **3. Archivo: `handleCompletedSessions.js`**
-### **Descripción**
-Este archivo maneja la lógica del evento `checkout.session.completed`. Expande los `line_items` de la sesión para extraer los detalles del producto comprado.
+### **Archivo: `handleCompletedSessions.js`**
+**Descripción:** Este archivo maneja la lógica del evento `checkout.session.completed`. Expande los `line_items` de la sesión para extraer los detalles del producto comprado.
 
-### **Funciones**
+**Funciones**
 #### `handleCompletedSession(session)`
 - **Descripción:** Procesa los productos comprados en una sesión de pago.
 - **Parámetros:**
@@ -54,9 +159,8 @@ Este archivo maneja la lógica del evento `checkout.session.completed`. Expande 
 
 ---
 
-## **4. Archivo: `testStripe.js`**
-### **Descripción**
-Este archivo es utilizado para probar la funcionalidad de `createPaymentSession`.
+### **Archivo: `testStripe.js`**
+**Descripción:** Este archivo es utilizado para probar la funcionalidad de `createPaymentSession`.
 
 ### **Pruebas configuradas**
 1. **Promoción de Bienvenida:**
@@ -70,3 +174,11 @@ Este archivo es utilizado para probar la funcionalidad de `createPaymentSession`
 Ejecutar el archivo con el comando:
 ```bash
 node src/payments/testStripe.js
+```
+
+---
+
+### **4. Próximos pasos**
+1. **Conectar los servicios al bot:** Integrar las funciones CRUD y Stripe con los comandos del bot.
+2. **Probar el flujo completo:** Asegurarse de que los pagos, la creación de usuarios y las consultas funcionen correctamente.
+3. **Optimizar la estructura:** Consolidar los servicios y organizar los comandos del bot para facilitar la escalabilidad.

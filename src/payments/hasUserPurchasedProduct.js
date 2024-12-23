@@ -1,33 +1,24 @@
-require('dotenv').config();
-const {getAllPayments} = require('../utils/getAllPayments');
+const User = require('../database/models/user');
 
 /**
- * Verifica si un correo ha comprado un producto especifico
- * @param {string} email - Correo del cliente
- * @param {string} productId - ID del producto a verificar
- * @returns {Promise<boolean>} -Verdadero si el correo compró el producto
+ * Verifica si un usuario ha comprado alguna vez una suscripción
+ * @param {string} email - Correo electrónico del usuario
+ * @returns {Promise<boolean>} - Retorna `true` si el usuario ha comprado una suscripción, de lo contrario `false`
  */
-
-async function hasPurchasedProduct(email, productId) {
+const hasUserPurchasedProduct = async (email) => {
     try {
-        const payments = await getAllPayments();
-        console.log('Pagos recuperados:', JSON.stringify(payments, null, 2));
+        const user = await User.findOne({ email });
 
-        payments.forEach((payment, index) => {
-            console.log(`Pago #${index + 1}:`, payment)
-            console.log(`Cliente:`, payment.customer);
-            console.log('Productos:', payment.products);
-        })
+        if (!user) {
+            console.log(`Usuario con correo ${email} no encontrado.`);
+            return false;
+        }
 
-        // Buscar si el correo compró el producto
-        return payments.some((payment) => 
-            payment.customer.email === email && 
-            payment.products.some((product) => product.productId === productId)
-        );
+        return user.hasPurchasedSubscription || false;
     } catch (error) {
-        console.error('Error al verificar el producto:', error);
-        throw new Error('No se pudo verificar la compra del producto');
+        console.error('Error verificando si el usuario ha comprado una suscripción:', error.message);
+        throw new Error('No se pudo verificar la compra.');
     }
-}
+};
 
-module.exports = {hasPurchasedProduct}
+module.exports = hasUserPurchasedProduct;

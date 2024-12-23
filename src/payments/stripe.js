@@ -16,6 +16,7 @@ const stripeClient = stripe(process.env.STRIPE_SECRET_KEY);
 
 async function createPaymentSession(priceId, mode, successUrl, cancelUrl) {
     try {
+        
         const session = await stripeClient.checkout.sessions.create({
             payment_method_types: ['card'], // Solo pagos con tarjeta
             mode: mode, // 'payment' para único, 'subscription' para recurrente
