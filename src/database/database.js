@@ -1,16 +1,22 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+let isConnected = false; // Para verificar si ya está conectado
+
 const connectDB = async () => {
+    if (isConnected) {
+        console.log('Ya existe una conexión activa con la base de datos.');
+        return;
+    }
+
     try {
         await mongoose.connect(process.env.MONGO_URI);
-        console.log('Conextion a MongoDB exitosa');
+        isConnected = true;
+        console.log('Conexión a MongoDB exitosa.');
     } catch (error) {
         console.error('Error al conectar con MongoDB:', error.message);
-        process.exit(1); // Salir del proceso en caso de error
+        throw new Error('No se pudo conectar a la base de datos.');
     }
-}
-
-connectDB();
+};
 
 module.exports = connectDB;
