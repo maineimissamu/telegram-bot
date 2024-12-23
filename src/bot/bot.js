@@ -1,6 +1,7 @@
 const { Telegraf } = require('telegraf');
 const { rutaImagen, captionTexto } = require('./sendInformation');
 const { setupManageButton } = require('../utils/manageButton');
+const { handleTarifas, registerTarifasActions } = require('../utils/tarifas');
 
 /**
  * Inicia el bot de Telegram
@@ -22,6 +23,10 @@ const startBot = () => {
             }
         );
     });
+    // Registrar acciones globalmente
+registerTarifasActions(bot);
+// Comando para mostrar tarifas
+bot.command('tarifas', handleTarifas);
 
     setupManageButton(bot);
 

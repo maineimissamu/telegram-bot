@@ -1,5 +1,5 @@
 const handleDudas = require("./dudas");
-const handleTarifas = require("./tarifas");
+const {handleTarifas} = require("./tarifas");
 
 // Configurar todas las acciones relacionadas con "Más información" y sus botones adicionales
 function setupManageButton(bot) {
