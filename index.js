@@ -1,5 +1,6 @@
 const initializeContext = require('./src/context');
-require('./src/payments/webhook'); // Tu webhook
+require('./src/payments/webhook'); // Webhook
+const startBot = require('./src/bot/bot'); // Bot de Telegram
 
 (async () => {
     try {
@@ -12,7 +13,11 @@ require('./src/payments/webhook'); // Tu webhook
             await runTest(); // Ejecutar la prueba
             process.exit(); // Finalizar el proceso después de la prueba
         }
-        
+
+        // Iniciar el bot
+        startBot();
+
+ 
 
         console.log('Aplicación iniciada con éxito.');
     } catch (error) {

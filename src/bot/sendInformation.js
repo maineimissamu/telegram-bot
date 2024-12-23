@@ -1,7 +1,9 @@
+const path = require('path');
 const { Markup } = require('telegraf');
 
-// ruta de la imagen
-const rutaImagen = '../../assets/1.png';
+// ruta de la 
+
+const rutaImagen = path.resolve(__dirname, '../../assets/1.png')
 
 // Texto del mensaje
 const captionTexto =`GRUPO PREMIUM🥇 

@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const generadeRandomCode = require('./gerenadeCode');
-
+const createUserService = require('./userServices/createUserService');
 const codeStorage = new Map(); // Para almacenar temporalmente los códigos enviados
 
 /**
@@ -12,7 +12,7 @@ const sendVerificationEmail = (bot) => {
     bot.on('message', async (msgCtx) => {
         const userMessage = msgCtx.message.text;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+        const chatId = msgCtx.message.chat.id;
         if (emailRegex.test(userMessage)) {
             // Guardar el correo temporalmente hasta confirmar
             codeStorage.set(userMessage, null);
@@ -42,6 +42,7 @@ const sendVerificationEmail = (bot) => {
             if (emailToVerify) {
                 codeStorage.delete(emailToVerify); // Remover el código tras validarlo
                 await msgCtx.reply(`El código es válido. Correo verificado: ${emailToVerify}`);
+                await createUserService(chatId, emailToVerify)
             } else {
                 await msgCtx.reply('El código ingresado no es válido o ha expirado.');
             }

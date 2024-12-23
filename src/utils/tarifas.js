@@ -3,8 +3,10 @@ const handlePromo = require('../bot/handlePromo');
 const handleMonthly = require('../bot/handleMonthly');
 const handleAnual = require('../bot/handleAnual');
 const { sendVerificationEmail } = require('./sendEmail');
+const findUser = require('../utils/userServices/findUserService');
 
 async function handleTarifas(ctx, bot) {
+    const chatId = ctx.chat.id;
     const imagePath = path.join(__dirname, '../../assets/tarifas.png');
     await ctx.replyWithPhoto(
         { source: imagePath },
@@ -27,19 +29,45 @@ Selecciona una opción para continuar:`,
         }
     );
 
-    bot.action('promo_bienvenida', async (ctx) => {
-        await handlePromo(ctx);
-    });
-    bot.action('pago_mensual', async (ctx) => {
-        await handleMonthly(ctx);
-    });
-    bot.action('pago_anual', async (ctx) => {
-        await handleAnual(ctx);
-    });
+    const result = await findUser({chatId});
 
-    // Configura el manejo de correos en el bot
-    sendVerificationEmail(bot);
-}
+    
+        bot.action('promo_bienvenida', async (ctx) => {
+            if(result) {
+                await handlePromo(ctx);
+                
+            } else {
+                // Configura el manejo de correos en el bot
+        sendVerificationEmail(bot);
+            }
+            
+        });
+        bot.action('pago_mensual', async (ctx) => {
+            if(result) {
+                await handleMonthly(ctx);
+                
+            } else {
+                // Configura el manejo de correos en el bot
+        sendVerificationEmail(bot);
+            }
+        });
+        bot.action('pago_anual', async (ctx) => {
+            if(result) {
+                await handleAnual(ctx);
+                
+            } else {
+                // Configura el manejo de correos en el bot
+        sendVerificationEmail(bot);
+            }
+        });
+    
+
+    }
+
+    
+
+    
+
 
 module.exports = handleTarifas;
 
