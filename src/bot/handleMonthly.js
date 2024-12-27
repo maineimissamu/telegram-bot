@@ -3,7 +3,7 @@ const { createPaymentSession } = require('../payments/stripe');
 async function handleMonthly(ctx) {
     try {
         const paymentLink = await createPaymentSession(
-            'price_1QUGE6IIU3N2X4VQ0fq6jRjh', // ID del precio
+            'price_1QYb0P4gaL6VjssxIuejBG77', // ID del precio
             'subscription', // Modo de pago único
             'http://localhost:3000/success', // URL de éxito
             'http://localhost:3000/cancel'   // URL de cancelación
