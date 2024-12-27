@@ -41,13 +41,17 @@ const sendVerificationEmail = (bot) => {
 
             if (emailToVerify) {
                 codeStorage.delete(emailToVerify); // Remover el código tras validarlo
-                await msgCtx.reply(`El código es válido. Correo verificado: ${emailToVerify}`);
-                await createUserService(chatId, emailToVerify)
+                await msgCtx.reply(`✅ El código es válido. Correo verificado: "${emailToVerify}."
+Eliga su plan de tarifa haciendo click de nuevo`);
+                await createUserService(chatId, emailToVerify);
+
+                // Mostrar tarifas después de verificar el correo
+                
             } else {
-                await msgCtx.reply('El código ingresado no es válido o ha expirado.');
+                await msgCtx.reply('❌ El código ingresado no es válido o ha expirado.');
             }
         } else {
-            await msgCtx.reply(`El correo electrónico "${userMessage}" no es válido o no tiene un código asociado. Por favor, intenta nuevamente.`);
+            await msgCtx.reply(`❌ El correo electrónico "${userMessage}" no es válido o no tiene un código asociado. Por favor, intenta nuevamente.`);
         }
     });
 
@@ -84,13 +88,14 @@ const sendVerificationEmail = (bot) => {
                 await ctx.reply(`Gracias. El correo electrónico "${userMessage}" es válido. Se ha enviado un código de verificación.`);
             } catch (error) {
                 console.error('Error al enviar el correo:', error);
-                await ctx.reply('Ocurrió un error al enviar el correo. Por favor, intenta nuevamente más tarde.');
+                await ctx.reply('⚠️ Ocurrió un error al enviar el correo. Por favor, intenta nuevamente más tarde.');
             }
         } else if (data === 'change_email') {
             await ctx.reply('Por favor, ingresa un nuevo correo electrónico.');
         }
-
     });
 };
 
 module.exports = { sendVerificationEmail };
+
+

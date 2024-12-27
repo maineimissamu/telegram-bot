@@ -9,7 +9,9 @@ const startScheduler = require('../utils/userServices/scheduler'); // Importar e
  * Inicia el bot de Telegram
  */
 const startBot = () => {
+
     const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN); // Usa el token desde el archivo .env
+
 
     // Comando /start
     bot.start(async (ctx) => {
@@ -17,6 +19,7 @@ const startBot = () => {
             { source: rutaImagen }, // Imagen inicial
             {
                 caption: captionTexto, // Texto inicial
+                parse_mode: 'Markdown',
                 reply_markup: {
                     inline_keyboard: [
                         [{ text: 'Más información', callback_data: 'info_click' }]

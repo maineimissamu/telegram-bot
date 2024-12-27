@@ -1,32 +1,33 @@
 const path = require('path');
 const { Markup } = require('telegraf');
 
-// ruta de la 
-
-const rutaImagen = path.resolve(__dirname, '../../assets/1.png')
+// Ruta de la imagen
+const rutaImagen = path.resolve(__dirname, '../../assets/1.png');
 
 // Texto del mensaje
-const captionTexto =`GRUPO PREMIUM🥇 
+const captionTexto = `*GRUPO PREMIUM 🥇*
 
-                    📌El grupo PREMIUM🥇 es un canal privado donde te colgamos nuestra propia operativa en tiempo real. 
+📌 **El grupo PREMIUM** es un canal privado donde compartimos nuestra propia operativa en tiempo real.
 
-                    📉Hacemos una media de 25/30 estrategias mensuales en valores desde intradía y swing trading hasta largo plazo. Cada perfil de inversor tiene operativa de su gusto. 
+📉 *Estrategias:*  
+- Media de **25/30 estrategias mensuales** en valores.  
+- Desde *intradiario y swing trading* hasta *largo plazo*.  
+- Cada perfil de inversor tiene operativas adaptadas a sus gustos.
 
-                    📍Análisis técnico y fundamental profesional. Llevamos 24 años operando los mercados. 
+📍 **Análisis técnico y fundamental profesional**  
+- Con **24 años de experiencia** operando en los mercados.
 
-                    Marcamos:
-                    - Explicación técnica.
-                    - Precio de entrada.
-                    - Porcentaje de capital a exponer.
-                    - Objetivo.
-                    - Stop loss ajustado. Con una gestión del riesgo exigente.
+🔹 *Marcamos:*  
+  - Explicación técnica.  
+  - Precio de entrada.  
+  - Porcentaje de capital a exponer.  
+  - Objetivo.  
+  - Stop loss ajustado, con estricta gestión del riesgo.
 
-                    🗣️ Seguimiento diario y chat abierto entre los suscriptores.
+🗣️ *Seguimiento diario y chat abierto* entre suscriptores.  
+🔖 *Resolución de dudas* y análisis de valores en cartera o radar.
 
-                    🔖Resolvemos tus dudas y analizamos los valores que tengas en cartera o en el radar. 
+🥇 *Track record del canal PREMIUM:*  
+- *Año 1*: **+116%** sobre una cuenta inicial de 100,000$.`;
 
-                    🥇Track record del canal PREMIUM🥇 año 1, +116%. volcado sobre una cuenta inicial de 100.000$.`
-
-
-
-module.exports = { rutaImagen, captionTexto};
+module.exports = { rutaImagen, captionTexto };
