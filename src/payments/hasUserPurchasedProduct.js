@@ -2,15 +2,15 @@ const User = require('../database/models/user');
 
 /**
  * Verifica si un usuario ha comprado alguna vez una suscripción
- * @param {string} email - Correo electrónico del usuario
+ * @param {string} chatId - Correo electrónico del usuario
  * @returns {Promise<boolean>} - Retorna `true` si el usuario ha comprado una suscripción, de lo contrario `false`
  */
-const hasUserPurchasedProduct = async (email) => {
+const hasUserPurchasedProduct = async (chatId) => {
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ chatId });
 
         if (!user) {
-            console.log(`Usuario con correo ${email} no encontrado.`);
+            console.log(`Usuario con correo ${chatId} no encontrado.`);
             return false;
         }
 
